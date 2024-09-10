@@ -75,7 +75,9 @@ def parse_expression(expression):
             stack.append(Node(token))
         else:
             # Cria um nó para outros operandos
-            stack.append(Node(token))
+            type_value = token
+            value = tokens[i]
+            stack.append(Node(type_value, value))
 
         i += 1
 
@@ -302,26 +304,114 @@ def percorrendo(root):
                 moveOperator(node)
             elif (node.type_value == "CONST"):
                 const(node)
-            else:
+            elif (node.type_value == "TEMP"):
                 temp(node)
 
     post_order(root)
 
 
 def verificar_nos(root):
-    
-    percorrendo(root)
+    padroes = []
+
     def post_order(node):
         if node is not None:
             for child in node.children:
                 post_order(child)
             if node.padrao_root:
-                print([n.type_value for n in node.padrao])
+                padrao = [n.type_value for n in node.padrao]
+                print(padrao)
+                padroes.append(node.padrao)
     post_order(root)
+    return padroes
+
+
+def codigo_equivalente(padroes):
+        a = 1 #Valores arbitrarios pros registradores
+        b = 1
+        c = 1
+        #patterns = patterns[::-1] #Inverte a matriz recebida (para organizar de baixo pra cima)
+        for i in range(len(padroes)):
+            for j in range(len(padroes[i])):
+                if padroes[i][j].padrao_root == True:
+                    node = padroes[i][0] #No atual
+                    option = padroes[i][0].padrao_id #Padrao atual
+                    instruction = PATTERNS.get(option, "Padrão não encontrado") #Pega a instrução na tabela
+                    
+                    if (option == 1): #TEMP
+                        #ESSA OPERAÇÃO CRIA UM NOVO REGISTRADOR, MAS NÃO IMPRIME NADA
+                        c = b
+                        b = a
+                        a += 1
+                
+                    if (option in [2, 3, 4, 5]): # ADD, SUB, MUL e DIV
+                        if(node.children[0].value != None):
+                            print(i+1, instruction.format(i=b, j=node.children[0].value, k=b))
+                        else:
+                            print(i+1, instruction.format(i=b, j=c, k=b))
+
+                    if (option in [6, 7, 9]): # ADDI e SUBI
+                        aux1 = node.children[1].value
+                        aux2 = node.children[0].value
+                        a+=1
+                        if (option == 6 or option == 9): #Depende se o const está na esquerda ou direita
+                            print(i+1, instruction.format(i=b, j=aux2, c=aux1))
+                        else :
+                            print(i+1, instruction.format(i=b, j=aux1, c=aux2))   
+                    
+                    if (option == 8): # ADDI Caso especial para CONST solto
+                        print(i+1, instruction.format(i=b, j=0, c=node.value))
+                    
+                    if (option in [10, 11]): #LOAD dois primeiros casos
+                        child = node.children[0]
+                        aux1 = child.children[1].value
+                        aux2 = child.children[0].value
+                        a+=1
+                        if (option == 10): #Depende se o const está na esquerda ou direita 
+                            print(i+1, instruction.format(i=b, j=aux2, c=aux1))
+                        else :
+                            print(i+1, instruction.format(i=b, j=aux1, c=aux2))  
+                    
+                    if (option == 12): #LOAD terceiro caso
+                        child = node.children[0]
+                        print(i+1, instruction.format(i=b, j=0, c=child.value))
+
+                    if (option == 13): #LOAD quarto caso
+                        print(i+1, instruction.format(i=b, j=b, c=0))
+
+                    if (option in [14, 15]): #MOVE dois primeiros casos
+                        child = node.children[0].children[0]
+                        aux1 = child.children[1] 
+                        aux2 = child.children[0]
+                        a+=1 
+                        if (option == 14): #Depende se o const está na esquerda ou direita
+                            print(i+1, instruction.format(i=b, j=aux2, c=aux1))
+                        else :
+                            print(i+1, instruction.format(i=b, j=aux1, c=aux2))  
+
+                    if (option == 16): #MOVE terceiro caso
+                        child = node.children[0].children[0]
+                        print(i+1, instruction.format(i=b, j=0, c=child.value))
+
+                    if (option == 17): #MOVE quarto caso
+                        print(i+1, instruction.format(i=b, j=a, c=0))
+                    
+                    if (option == 18): #MOVEM
+                        print(i+1, instruction.format(i=b, j=a))
+
+
+
+
 
 # expression = "MOVE ( MEM ( - ( MEM ( + ( TEMP i , CONST 3 ) ) , * ( - ( TEMP x , FP ) , CONST 2 ) ) , CONST 4 ) , MEM ( / ( CONST 6 , FP ) ) )"
 expression = "MOVE ( MEM ( + ( MEM ( + ( FP , CONST a ) ) , * ( TEMP i , CONST 4 ) ) ) , MEM ( + ( FP , CONST x ) ) )"
 # expression = "MOVE ( MEM ( + ( CONST 2 , TEMP i ) ) , TEMP j )"
 tree = parse_expression(expression)
+#printar a arvore
 print_tree(tree)
-verificar_nos(tree)
+
+#identificar padroes
+percorrendo(tree)
+#printar padroes
+padroes = verificar_nos(tree)
+codigo_equivalente(padroes)
+#identificar_codigo(tree)
