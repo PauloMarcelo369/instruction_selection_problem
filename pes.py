@@ -380,8 +380,8 @@ def codigo_equivalente(padroes):
 
                     if (option in [14, 15]): #MOVE dois primeiros casos
                         child = node.children[0].children[0]
-                        aux1 = child.children[1] 
-                        aux2 = child.children[0]
+                        aux1 = child.children[1].value
+                        aux2 = child.children[0].value
                         a+=1 
                         if (option == 14): #Depende se o const está na esquerda ou direita
                             print(i+1, instruction.format(i=b, j=aux2, c=aux1))
@@ -403,14 +403,17 @@ def codigo_equivalente(padroes):
 
 
 # expression = "MOVE ( MEM ( - ( MEM ( + ( TEMP i , CONST 3 ) ) , * ( - ( TEMP x , FP ) , CONST 2 ) ) , CONST 4 ) , MEM ( / ( CONST 6 , FP ) ) )"
-expression = "MOVE ( MEM ( + ( MEM ( + ( FP , CONST a ) ) , * ( TEMP i , CONST 4 ) ) ) , MEM ( + ( FP , CONST x ) ) )"
-# expression = "MOVE ( MEM ( + ( CONST 2 , TEMP i ) ) , TEMP j )"
+#expression = "MOVE ( MEM ( + ( MEM ( + ( FP , CONST a ) ) , * ( TEMP i , CONST 4 ) ) ) , MEM ( + ( FP , CONST x ) ) )"
+expression = "MOVE ( MEM ( + ( CONST 2 , TEMP i ) ) , TEMP j )"
 tree = parse_expression(expression)
+
+
 #printar a arvore
 print_tree(tree)
 
 #identificar padroes
 percorrendo(tree)
+
 #printar padroes
 padroes = verificar_nos(tree)
 codigo_equivalente(padroes)
