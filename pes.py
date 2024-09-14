@@ -107,16 +107,18 @@ def print_tree(node, prefix="", is_last=True):
         print_tree(child, new_prefix, i == len(node.children) - 1)
 
 COSTS = {
-        "ADD": 1,
-        "ADDI": 1,
-        "MUL": 1,
-        "DIV": 1,
-        "TEMP": 0,
-        "SUBI": 1,
-        "LOAD": 1,
-        "STORE": 1,
-        "MOVEM": 2,
-    }
+    "+": 1,
+    "*": 1,
+    "/": 1,
+    "TEMP": 0,
+    "-": 1,
+    "LOAD": 1,
+    "STORE": 1,
+    "MOVE": 2,
+    "CONST": 1,
+    "MEM": 1
+}
+
 
 PATTERNS = {
         1: "TEMP r{i}",
@@ -281,6 +283,34 @@ def temp(node : Node):
 
 #computo todos os custos do node associando os padrões
 # def computeCosts(node):
+MEMO = {}
+
+def computeCosts(root):
+    custo = 0
+    padroes = []
+
+    def get_padroes(node):
+        if node is not None:
+            for child in node.children:
+                get_padroes(child)
+            if node.padrao_root:
+                padrao = [n.type_value for n in node.padrao]
+                padroes.append(padrao)
+
+    get_padroes(root)
+
+    for arr in padroes:
+        arr_tuple = tuple(arr)  
+        if arr_tuple in MEMO:
+            custo += MEMO[arr_tuple]
+        else:
+            aux = 0
+            for inst in arr:
+                aux += COSTS.get(inst, 0)  
+            MEMO[arr_tuple] = aux  
+            custo += aux
+
+    print(f"Custo Total = {custo}")
 
 def percorrendo(root):
     # Função auxiliar para realizar a travessia em pós-ordem
@@ -402,10 +432,12 @@ def codigo_equivalente(padroes):
 
 
 
-# expression = "MOVE ( MEM ( - ( MEM ( + ( TEMP i , CONST 3 ) ) , * ( - ( TEMP x , FP ) , CONST 2 ) ) , CONST 4 ) , MEM ( / ( CONST 6 , FP ) ) )"
+expression = "MOVE ( MEM ( - ( MEM ( + ( TEMP i , CONST 3 ) ) , * ( - ( TEMP x , FP ) , CONST 2 ) ) , CONST 4 ) , MEM ( / ( CONST 6 , FP ) ) )"
 #expression = "MOVE ( MEM ( + ( MEM ( + ( FP , CONST a ) ) , * ( TEMP i , CONST 4 ) ) ) , MEM ( + ( FP , CONST x ) ) )"
-expression = "MOVE ( MEM ( + ( CONST 2 , TEMP i ) ) , TEMP j )"
+#expression = "MOVE ( MEM ( + ( CONST 2 , TEMP i ) ) , TEMP j )"
 tree = parse_expression(expression)
+
+
 
 
 #printar a arvore
@@ -417,4 +449,4 @@ percorrendo(tree)
 #printar padroes
 padroes = verificar_nos(tree)
 codigo_equivalente(padroes)
-#identificar_codigo(tree)
+computeCosts(tree)
