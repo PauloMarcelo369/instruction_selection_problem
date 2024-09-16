@@ -282,7 +282,6 @@ def temp(node : Node):
             
 
 #computo todos os custos do node associando os padrões
-# def computeCosts(node):
 MEMO = {}
 
 def computeCosts(root):
@@ -356,47 +355,46 @@ def verificar_nos(root):
 
 
 def codigo_equivalente(padroes):
-        a = 1 #Valores arbitrarios pros registradores
+        a = 1 
         b = 1
         c = 1
-        #patterns = patterns[::-1] #Inverte a matriz recebida (para organizar de baixo pra cima)
         for i in range(len(padroes)):
             for j in range(len(padroes[i])):
                 if padroes[i][j].padrao_root == True:
-                    node = padroes[i][0] #No atual
-                    option = padroes[i][0].padrao_id #Padrao atual
-                    instruction = PATTERNS.get(option, "Padrão não encontrado") #Pega a instrução na tabela
+                    node = padroes[i][0] 
+                    option = padroes[i][0].padrao_id 
+                    instruction = PATTERNS.get(option, "Padrão não encontrado") 
                     
                     if (option == 1): #TEMP
-                        #ESSA OPERAÇÃO CRIA UM NOVO REGISTRADOR, MAS NÃO IMPRIME NADA
+                        #apenas para criar um novo registrador
                         c = b
                         b = a
                         a += 1
                 
-                    if (option in [2, 3, 4, 5]): # ADD, SUB, MUL e DIV
+                    if (option in [2, 3, 4, 5]): #ADD, SUB, MUL e DIV
                         if(node.children[0].value != None):
                             print(i+1, instruction.format(i=b, j=node.children[0].value, k=b))
                         else:
                             print(i+1, instruction.format(i=b, j=c, k=b))
 
-                    if (option in [6, 7, 9]): # ADDI e SUBI
+                    if (option in [6, 7, 9]): #ADDI e SUBI
                         aux1 = node.children[1].value
                         aux2 = node.children[0].value
                         a+=1
-                        if (option == 6 or option == 9): #Depende se o const está na esquerda ou direita
+                        if (option == 6 or option == 9):
                             print(i+1, instruction.format(i=b, j=aux2, c=aux1))
                         else :
                             print(i+1, instruction.format(i=b, j=aux1, c=aux2))   
                     
-                    if (option == 8): # ADDI Caso especial para CONST solto
+                    if (option == 8): # ADDI (caso especial)
                         print(i+1, instruction.format(i=b, j=0, c=node.value))
                     
-                    if (option in [10, 11]): #LOAD dois primeiros casos
+                    if (option in [10, 11]): 
                         child = node.children[0]
                         aux1 = child.children[1].value
                         aux2 = child.children[0].value
                         a+=1
-                        if (option == 10): #Depende se o const está na esquerda ou direita 
+                        if (option == 10):  
                             print(i+1, instruction.format(i=b, j=aux2, c=aux1))
                         else :
                             print(i+1, instruction.format(i=b, j=aux1, c=aux2))  
@@ -413,7 +411,7 @@ def codigo_equivalente(padroes):
                         aux1 = child.children[1].value
                         aux2 = child.children[0].value
                         a+=1 
-                        if (option == 14): #Depende se o const está na esquerda ou direita
+                        if (option == 14): 
                             print(i+1, instruction.format(i=b, j=aux2, c=aux1))
                         else :
                             print(i+1, instruction.format(i=b, j=aux1, c=aux2))  
@@ -439,14 +437,21 @@ tree = parse_expression(expression)
 
 
 
-
 #printar a arvore
+
+print("1. ")
 print_tree(tree)
+print("\n")
+
 
 #identificar padroes
+print("2. ")
 percorrendo(tree)
-
 #printar padroes
 padroes = verificar_nos(tree)
-codigo_equivalente(padroes)
 computeCosts(tree)
+print("\n")
+
+
+print("3. ")
+codigo_equivalente(padroes)
