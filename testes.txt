@@ -1,3 +1,3 @@
-"MOVE(MEM(-(MEM(+(TEMP i, CONST 3)), *(-(TEMP x, FP), CONST 2)), CONST 4), MEM(/(CONST 6, FP)))"
-"MOVE ( MEM ( + ( MEM ( + ( FP , CONST a ) ) , * ( TEMP i , CONST 4 ) ) ) , MEM ( + ( FP , CONST x ) ) )"
-"MOVE ( MEM ( + ( CONST 2 , TEMP i ) ) , TEMP j )"
+MOVE(MEM(-(MEM(+(TEMP i, CONST 3)), *(-(TEMP x, FP), CONST 2)), CONST 4), MEM(/(CONST 6, FP)))
+MOVE ( MEM ( + ( MEM ( + ( FP , CONST a ) ) , * ( TEMP i , CONST 4 ) ) ) , MEM ( + ( FP , CONST x ) ) )
+MOVE ( MEM ( + ( CONST 2 , TEMP i ) ) , TEMP j )
