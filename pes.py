@@ -430,28 +430,34 @@ def codigo_equivalente(padroes):
 
 
 
-expression = "MOVE ( MEM ( - ( MEM ( + ( TEMP i , CONST 3 ) ) , * ( - ( TEMP x , FP ) , CONST 2 ) ) , CONST 4 ) , MEM ( / ( CONST 6 , FP ) ) )"
-#expression = "MOVE ( MEM ( + ( MEM ( + ( FP , CONST a ) ) , * ( TEMP i , CONST 4 ) ) ) , MEM ( + ( FP , CONST x ) ) )"
-#expression = "MOVE ( MEM ( + ( CONST 2 , TEMP i ) ) , TEMP j )"
-tree = parse_expression(expression)
+def processar_arquivo(arquivo):
+    try:
+        with open(arquivo, 'r') as file:
+            # Para cada linha no arquivo
+            for linha in file:
+                expression = linha.strip()  
 
+                if expression:  
+                    print(f"Processando a expressão: {expression}\n")
 
+                    tree = parse_expression(expression)
+                    print("1. Árvore gerada:")
+                    print_tree(tree)  # Supondo que print_tree já imprime a árvore de forma adequada
+                    print("\n")
 
-#printar a arvore
+                    print("2. Padroes e custo total:")
+                    percorrendo(tree)  # Executa alguma operação de percurso na árvore
+                    padroes = verificar_nos(tree)  # Verifica padrões nos nós da árvore
+                    computeCosts(tree)  # Executa a função para computar custos
+                    print("\n")
 
-print("1. ")
-print_tree(tree)
-print("\n")
+                    print("3. Código equivalente gerado:")
+                    codigo_equivalente(padroes)  # Gera o código a partir dos padrões
+                    print("\n\n")
+    
+    except FileNotFoundError:
+        print(f"O arquivo {arquivo} não foi encontrado.")
+    except Exception as e:
+        print(f"Ocorreu um erro: {str(e)}")
 
-
-#identificar padroes
-print("2. ")
-percorrendo(tree)
-#printar padroes
-padroes = verificar_nos(tree)
-computeCosts(tree)
-print("\n")
-
-
-print("3. ")
-codigo_equivalente(padroes)
+processar_arquivo('testes.txt')
