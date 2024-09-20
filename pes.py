@@ -433,7 +433,6 @@ def codigo_equivalente(padroes):
 def processar_arquivo(arquivo):
     try:
         with open(arquivo, 'r') as file:
-            # Para cada linha no arquivo
             for linha in file:
                 expression = linha.strip()  
 
